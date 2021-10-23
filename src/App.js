@@ -1,36 +1,42 @@
 import './App.css';
 import {useEffect, useState} from "react";
 
+const getLocalData = JSON.parse(localStorage.getItem('allCountryList'))
+
 function App() {
-    const [allCountryList, setAllCountryList] = useState([]);
-    const defaultCountryDetails =  {
+    const [allCountryList, setAllCountryList] = useState(getLocalData ? getLocalData : []);
+    const defaultCountryDetails = {
         countryName: '',
         state: []
     }
-    const defaultStateDetails =  {
+    const defaultStateDetails = {
         stateName: '',
         city: []
     }
-    const defaultCityDetails =  {
+    const defaultCityDetails = {
         cityName: ''
     }
 
+    useEffect(() => {
+        localStorage.setItem('allCountryList', JSON.stringify(allCountryList))
+    }, [allCountryList])
+
     const onAddCountry = () => {
-        allCountryList.push(defaultCountryDetails)
-        setAllCountryList([...allCountryList])
+        const data = [...allCountryList, defaultCountryDetails]
+        setAllCountryList([...data])
     }
 
     const onChangeCountry = (type, countryIndex, name, value) => {
-        if(type=== 'Edit') {
-        allCountryList[countryIndex][name] = value
-        setAllCountryList([...allCountryList])
+        if (type === 'Edit') {
+            allCountryList[countryIndex][name] = value
+            setAllCountryList([...allCountryList])
         }
-        if(type=== 'Remove') {
+        if (type === 'Remove') {
             const list = [...allCountryList]
-            list.splice(countryIndex,1)
+            list.splice(countryIndex, 1)
             setAllCountryList(list)
         }
-        if(type=== 'AddState') {
+        if (type === 'AddState') {
             allCountryList[countryIndex].state = [...allCountryList[countryIndex].state, defaultStateDetails]
             setAllCountryList([...allCountryList])
         }
@@ -66,10 +72,20 @@ function App() {
 
     return (
         <div className="App">
-            <button className='buttonClass' onClick={() => {
-                onAddCountry()
-            }}>Add Country
-            </button>
+            <div>
+                <button className='buttonClass' onClick={() => {
+                    onAddCountry()
+                }}>Add Country
+                </button>
+                {allCountryList.length > 1 &&
+                <>
+                    <button className='buttonClass'>A -> Z
+                    </button>
+                    <button className='buttonClass'>Z -> A
+                    </button>
+                </>
+                }
+            </div>
             {allCountryList.length !== 0 && allCountryList.map((countryItem, countryIndex) => {
                 return (
                     <div className='countryView' key={`this is country ${countryIndex}`}>
